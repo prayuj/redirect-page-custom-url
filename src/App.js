@@ -56,7 +56,7 @@ function Logs() {
 }
 
 function Redirecting() {
-  const [targetObject, setTargetObject] = useState({});
+  const [redirectURLObject, setrRedirectURLObject] = useState({});
   const getTargetURL = () => {
     try {
       const pathname = window.location.pathname;
@@ -66,13 +66,13 @@ function Redirecting() {
           window.location = response.data.url
         })
         .catch(err => {
-          setTargetObject({
+          setrRedirectURLObject({
             url: `/404?target=${encodeURIComponent(window.location.href)}`
           })
         })
     } catch (e) {
       console.error(e);
-      setTargetObject({
+      setrRedirectURLObject({
         url: `/500?target=${encodeURIComponent(window.location.href)}`
       })
     }
@@ -81,18 +81,18 @@ function Redirecting() {
   useEffect(()=> {
     getTargetURL() 
     return () => {
-      setTargetObject({}); 
+      setrRedirectURLObject({});
     };
   }, [])
 
   return <div className="main-container">
-      {targetObject.url &&
+    {redirectURLObject.url &&
         <Redirect
-          to={targetObject.url}
+      to={redirectURLObject.url}
         />}
       <div className="row justify-content-center">
         <div className="col-fluid">
-          <h1 className="title">Redirecting</h1>
+        <h4 className="title">Redirecting "<span className="accent-style">{window.location.href}</span>" to target URL</h4>
           <div className="spinner">
             <div className="bounce1"></div>
             <div className="bounce2"></div>

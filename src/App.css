@@ -2,6 +2,8 @@
   --dark-color: #0c0f0a;
   --light-color: #fff;
   --accent-color: #ff206e;
+  overflow: clip;
+  height: 100%;
 }
 
 .main-container {
