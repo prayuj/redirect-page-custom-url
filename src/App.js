@@ -19,11 +19,17 @@ function App() {
         <span>
           <h2>prayuj</h2>
         </span>
-        <span class="accent-style">
+        <span className="accent-style">
           <h2>.tech</h2>
         </span>
       </a>
       <Switch>
+          <Route exact path="/">
+            <Dashboard />
+          </Route>
+          <Route path="/logs">
+            <Logs />
+          </Route>
         <Route path="/t/:url">
           <Redirecting />
         </Route>
@@ -39,6 +45,15 @@ function App() {
   );
 }
 
+function Dashboard() {
+  window.location = process.env.REACT_APP_CUSTOM_URL_ENDPOINT
+  return '';
+}
+
+function Logs() {
+  window.location = process.env.REACT_APP_CUSTOM_URL_ENDPOINT + '/logs';
+  return '';
+}
 
 function Redirecting() {
   const [targetObject, setTargetObject] = useState({});
@@ -64,7 +79,7 @@ function Redirecting() {
   }
 
   useEffect(()=> {
-    getTargetURL()
+    getTargetURL() 
     return () => {
       setTargetObject({}); 
     };
@@ -92,13 +107,14 @@ function NoMatch() {
 
   const urlParameters = new URLSearchParams(window.location.search);
   const target = urlParameters.has('target') ? decodeURIComponent(urlParameters.get('target')) : undefined;
+  document.title = '404 - Not Found';
 
   return <div className="App">
     <div className="main-container">
       <div className="row justify-content-center">
         <div className="col-fluid">
           <h1 className="title">404 - Not Found</h1>
-          {target ? <p>Could not redirect to <span id="target">{target}</span>.</p>:''}
+          {target ? <p>Could not redirect <span id="target">{target}</span>.</p>:''}
         </div>
       </div>
     </div>
@@ -109,13 +125,14 @@ function InternalError() {
 
   const urlParameters = new URLSearchParams(window.location.search);
   const target = urlParameters.has('target') ? decodeURIComponent(urlParameters.get('target')) : undefined;
+  document.title = '500 - Internal Error';
 
   return <div className="App">
     <div className="main-container">
       <div className="row justify-content-center">
         <div className="col-fluid">
           <h1 className="title">500 - Internal Error</h1>
-          {target ? <p>Could not redirect to <span id="target">{target}</span>.</p> : ''}
+          {target ? <p>Could not redirect <span id="target">{target}</span>.</p> : ''}
         </div>
       </div>
     </div>
