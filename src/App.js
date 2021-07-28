@@ -9,6 +9,7 @@ import Dashboard from './components/dashboard';
 import Login from './components/login';
 import Redirecting from './components/redirecting';
 import PrivateRoute from './components/privateRoute';
+import ErrorPages from './components/errorPages';
 
 function App() {
 
@@ -37,10 +38,10 @@ function App() {
           <Login />
         </Route>
         <Route path="/500">
-          <InternalError />
+            <ErrorPages title="500 - Internal Error" />
         </Route>
         <Route path="*">
-          <NoMatch />
+            <ErrorPages title="404 - Not Found" />
         </Route>
       </Switch>
       </div>
@@ -51,38 +52,6 @@ function App() {
 function Logs() {
   window.location = process.env.REACT_APP_CUSTOM_URL_ENDPOINT + '/logs';
   return <StaticPageRedirect name="Logs" />;
-}
-
-function NoMatch() {
-
-  const urlParameters = new URLSearchParams(window.location.search);
-  const target = urlParameters.has('target') ? decodeURIComponent(urlParameters.get('target')) : undefined;
-  document.title = '404 - Not Found';
-
-  return <div className="main-container">
-      <div className="row justify-content-center">
-        <div className="col-fluid">
-          <h1 className="title">404 - Not Found</h1>
-          {target ? <p>Could not redirect <span id="target">{target}</span>.</p>:''}
-        </div>
-      </div>
-    </div>
-}
-
-function InternalError() {
-
-  const urlParameters = new URLSearchParams(window.location.search);
-  const target = urlParameters.has('target') ? decodeURIComponent(urlParameters.get('target')) : undefined;
-  document.title = '500 - Internal Error';
-
-  return <div className="main-container">
-      <div className="row justify-content-center">
-        <div className="col-fluid">
-          <h1 className="title">500 - Internal Error</h1>
-          {target ? <p>Could not redirect <span id="target">{target}</span>.</p> : ''}
-        </div>
-      </div>
-    </div>
 }
 
 function StaticPageRedirect({name}) {
