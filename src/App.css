@@ -3,7 +3,11 @@
   --light-color: #fff;
   --accent-color: #ff206e;
   overflow: clip;
-  height: 100%;
+  min-height: 100vh;
+  font-family: "Poppins", sans-serif;
+  background: var(--dark-color);
+  color: var(--light-color);
+  display: flex;
 }
 
 .main-container {
@@ -11,11 +15,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
-  margin: auto;
-  font-family: "Poppins", sans-serif;
-  background: var(--dark-color);
-  color: var(--light-color);
 }
 
 #target {

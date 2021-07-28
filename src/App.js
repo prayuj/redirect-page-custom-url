@@ -8,6 +8,9 @@ import {
   Redirect
 } from "react-router-dom";
 import axios from "axios";
+import Dashboard from './components/dashboard';
+import Login from './components/login';
+import PrivateRoute from './components/privateRoute';
 
 
 function App() {
@@ -24,18 +27,21 @@ function App() {
         </span>
       </a>
       <Switch>
-          <Route exact path="/">
-            <Dashboard />
-          </Route>
-          <Route path="/logs">
-            <Logs />
-          </Route>
+        <PrivateRoute exact path="/">
+          <Dashboard />
+        </PrivateRoute>
+        <PrivateRoute path="/logs">
+          <Logs />
+        </PrivateRoute>
         <Route path="/t/:url">
           <Redirecting />
         </Route>
-          <Route path="/500">
-            <InternalError />
-          </Route>
+        <Route path="/login">
+          <Login />
+        </Route>
+        <Route path="/500">
+          <InternalError />
+        </Route>
         <Route path="*">
           <NoMatch />
         </Route>
@@ -43,11 +49,6 @@ function App() {
       </div>
     </Router>
   );
-}
-
-function Dashboard() {
-  window.location = process.env.REACT_APP_CUSTOM_URL_ENDPOINT;
-  return <StaticPageRedirect name="Dashboard"/>;
 }
 
 function Logs() {
@@ -109,8 +110,7 @@ function NoMatch() {
   const target = urlParameters.has('target') ? decodeURIComponent(urlParameters.get('target')) : undefined;
   document.title = '404 - Not Found';
 
-  return <div className="App">
-    <div className="main-container">
+  return <div className="main-container">
       <div className="row justify-content-center">
         <div className="col-fluid">
           <h1 className="title">404 - Not Found</h1>
@@ -118,7 +118,6 @@ function NoMatch() {
         </div>
       </div>
     </div>
-  </div>
 }
 
 function InternalError() {
@@ -127,8 +126,7 @@ function InternalError() {
   const target = urlParameters.has('target') ? decodeURIComponent(urlParameters.get('target')) : undefined;
   document.title = '500 - Internal Error';
 
-  return <div className="App">
-    <div className="main-container">
+  return <div className="main-container">
       <div className="row justify-content-center">
         <div className="col-fluid">
           <h1 className="title">500 - Internal Error</h1>
@@ -136,7 +134,6 @@ function InternalError() {
         </div>
       </div>
     </div>
-  </div>
 }
 
 function StaticPageRedirect({name}) {
