@@ -112,7 +112,7 @@ const Dashboard = () => {
                 </Col>
                 <Col xs={2}>
                     <Button>
-                        <i class="fas fa-print"></i>
+                        <i className="fas fa-print"></i>
                     </Button>
                 </Col>
             </Row>
@@ -142,7 +142,7 @@ const Dashboard = () => {
                 </Col>
                 <Col xs={2}>
                     <Button onClick={() => copyToClipboard(window.location.origin + "/t/" + urlObject.url)}>
-                        <i class="far fa-copy"></i>
+                        <i className="far fa-copy"></i>
                     </Button>
                 </Col>
             </Row>
@@ -172,17 +172,17 @@ const Dashboard = () => {
                                     <td>{url.count >= 0 ? url.count : 'No Data'}</td>
                                     <td>
                                         <Button href={url.toUrl} target="__blank">
-                                            <i class="fas fa-link"></i>
+                                            <i className="fas fa-link"></i>
                                         </Button>
                                     </td>
                                     <td>
                                         <Button onClick={() => deleteUrl(url._id)}>
-                                            <i class="far fa-trash-alt"></i>
+                                            <i className="far fa-trash-alt"></i>
                                         </Button>
                                     </td>
                                     <td>
                                         <Button onClick={() => copyToClipboard(window.location.origin + "/t/" + url.fromUrl)}>
-                                            <i class="far fa-copy"></i>
+                                            <i className="far fa-copy"></i>
                                         </Button>
                                     </td>
                                 </tr>
