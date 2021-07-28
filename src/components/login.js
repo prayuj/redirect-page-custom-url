@@ -20,7 +20,6 @@ const StyledAlert = styled(Alert)`
 `;
 
 const Login = ({props}) => {
-    console.log(props)
     const [value, setValue] = useState('');
     const [authSuccess, setAuthSuccess] = useState(false);
     const [alertObject, setAlertObject] = useState({show: false});
@@ -32,7 +31,7 @@ const Login = ({props}) => {
             show: true, 
             message: searchObject.get('message')
         });
-    });
+    }, []);
 
     if (authSuccess)
         return <Redirect to='/' />
