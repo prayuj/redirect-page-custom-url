@@ -3,6 +3,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Table from 'react-bootstrap/Table';
+import Button from 'react-bootstrap/Button';
 import styled from 'styled-components';
 import axios from 'axios';
 import { Redirect, Link } from "react-router-dom";
@@ -42,6 +43,18 @@ const Logs = () => {
 
     return ( 
         <StyledContainer fluid="lg">
+            <Row>
+                <Col xs={10} lg={11}>
+                    <h1>Logs</h1>
+                </Col>
+                <Col xs={2} lg={1}>
+                    <Link to='/'>
+                        <Button>
+                            <i className="fas fa-home"></i>
+                        </Button>
+                    </Link>
+                </Col>
+            </Row>
             <Row>
                 <Col>
                     <StyledTable responsive>
