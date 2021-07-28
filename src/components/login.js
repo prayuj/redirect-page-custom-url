@@ -3,19 +3,36 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import Alert from 'react-bootstrap/Alert';
 import styled from 'styled-components';
 import {setCookie} from '../utils';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Redirect } from "react-router-dom";
 
 const StyledContainer = styled(Container)`
     margin-top: 75px;
 `;
 
+const StyledAlert = styled(Alert)`
+    position: fixed;
+    bottom: 0;
+    left: 15px;
+`;
+
 const Login = ({props}) => {
     console.log(props)
     const [value, setValue] = useState('');
     const [authSuccess, setAuthSuccess] = useState(false);
+    const [alertObject, setAlertObject] = useState({show: false});
+
+    useEffect(() => {
+        const searchObject = new URLSearchParams(window.location.search);
+        if (searchObject.has('message')) 
+        setAlertObject({
+            show: true, 
+            message: searchObject.get('message')
+        });
+    });
 
     if (authSuccess)
         return <Redirect to='/' />
@@ -42,6 +59,13 @@ const Login = ({props}) => {
                         Submit
                     </Button>
                 </Form>
+            </Col>
+        </Row>
+        <Row>
+            <Col>
+                <StyledAlert show={alertObject.show} variant='primary'>
+                    <b>{alertObject.message}</b>
+                </StyledAlert>
             </Col>
         </Row>
     </StyledContainer>

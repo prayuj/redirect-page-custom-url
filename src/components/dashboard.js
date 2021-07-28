@@ -4,7 +4,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
-import Alert from 'react-bootstrap/Alert'
+import Alert from 'react-bootstrap/Alert';
 import styled from 'styled-components';
 import axios from 'axios';
 import Form from 'react-bootstrap/Form';
