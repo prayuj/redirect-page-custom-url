@@ -1,17 +1,14 @@
-import { useState, useEffect } from 'react'
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {
   BrowserRouter as Router,
   Switch,
-  Route,
-  Redirect
+  Route
 } from "react-router-dom";
-import axios from "axios";
 import Dashboard from './components/dashboard';
 import Login from './components/login';
+import Redirecting from './components/redirecting';
 import PrivateRoute from './components/privateRoute';
-
 
 function App() {
 
@@ -54,54 +51,6 @@ function App() {
 function Logs() {
   window.location = process.env.REACT_APP_CUSTOM_URL_ENDPOINT + '/logs';
   return <StaticPageRedirect name="Logs" />;
-}
-
-function Redirecting() {
-  const [redirectURLObject, setrRedirectURLObject] = useState({});
-  const getTargetURL = () => {
-    try {
-      const pathname = window.location.pathname;
-      const target = pathname.split('/t/')[1];
-      axios.get(`${process.env.REACT_APP_CUSTOM_URL_ENDPOINT}/t/${target}`)
-        .then(response => {
-          window.location = response.data.url
-        })
-        .catch(err => {
-          setrRedirectURLObject({
-            url: `/404?target=${encodeURIComponent(window.location.href)}`
-          })
-        })
-    } catch (e) {
-      console.error(e);
-      setrRedirectURLObject({
-        url: `/500?target=${encodeURIComponent(window.location.href)}`
-      })
-    }
-  }
-
-  useEffect(()=> {
-    getTargetURL() 
-    return () => {
-      setrRedirectURLObject({});
-    };
-  }, [])
-
-  return <div className="main-container">
-    {redirectURLObject.url &&
-        <Redirect
-      to={redirectURLObject.url}
-        />}
-      <div className="row justify-content-center">
-        <div className="col-fluid">
-        <h4 className="title">Redirecting "<span className="accent-style">{window.location.href}</span>" to target URL</h4>
-          <div className="spinner">
-            <div className="bounce1"></div>
-            <div className="bounce2"></div>
-            <div className="bounce3"></div>
-          </div>
-        </div>
-      </div>
-    </div>
 }
 
 function NoMatch() {
