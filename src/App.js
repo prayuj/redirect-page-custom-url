@@ -10,6 +10,7 @@ import Login from './components/login';
 import Redirecting from './components/redirecting';
 import PrivateRoute from './components/privateRoute';
 import ErrorPages from './components/errorPages';
+import Logs from './components/logs';
 
 function App() {
 
@@ -47,26 +48,6 @@ function App() {
       </div>
     </Router>
   );
-}
-
-function Logs() {
-  window.location = process.env.REACT_APP_CUSTOM_URL_ENDPOINT + '/logs';
-  return <StaticPageRedirect name="Logs" />;
-}
-
-function StaticPageRedirect({name}) {
-  return <div className="main-container">
-    <div className="row justify-content-center">
-      <div className="col-fluid">
-        <h4 className="title">Redirecting to {name}</h4>
-        <div className="spinner">
-          <div className="bounce1"></div>
-          <div className="bounce2"></div>
-          <div className="bounce3"></div>
-        </div>
-      </div>
-    </div>
-  </div>
 }
 
 export default App;
