@@ -15,6 +15,11 @@ const StyledContainer = styled(Container)`
     justify-content: center;
 `;
 
+
+const StyledH4 = styled.h4`
+    text-align: center;
+`;
+
 const Redirecting = () => {
 
     const [redirectURLObject, setrRedirectURLObject] = useState({});
@@ -68,7 +73,7 @@ const Redirecting = () => {
     return (<StyledContainer fluid="lg">
         <Row>
             <Col>
-                <h4 className="title">Redirecting "<span className="accent-style">{window.location.href}</span>" to target URL</h4>
+                <StyledH4>Redirecting "<span className="accent-style">{window.location.host + window.location.pathname}</span>" to target URL</StyledH4>
                 <div className="spinner">
                     <div className="bounce1"></div>
                     <div className="bounce2"></div>

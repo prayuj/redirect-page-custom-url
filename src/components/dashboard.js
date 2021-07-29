@@ -18,7 +18,7 @@ const StyledContainer = styled(Container)`
 const StyledAlert = styled(Alert)`
     position: fixed;
     bottom: 0;
-    left: 5em;
+    left: 15px;
 `;
 
 const StyledTable = styled(Table)`
