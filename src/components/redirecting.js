@@ -28,37 +28,35 @@ const Redirecting = () => {
         }
     }
 
-    const getTargetURL = async () => {
-
-        let additional = {};
-
-        try {
-            additional = await getGeoLocation()
-        } catch (error) {
-            console.error(error);
-        }
-
-        try {
-            const pathname = window.location.pathname;
-            const target = pathname.split('/t/')[1];
-            axios.get(`${process.env.REACT_APP_CUSTOM_URL_ENDPOINT}/t/${target}`, { params: { additional } })
-                .then(response => {
-                    window.location = response.data.url
-                })
-                .catch(err => {
-                    setrRedirectURLObject({
-                        url: `/404?target=${encodeURIComponent(window.location.href)}`
-                    })
-                })
-        } catch (e) {
-            console.error(e);
-            setrRedirectURLObject({
-                url: `/500?target=${encodeURIComponent(window.location.href)}`
-            })
-        }
-    }
-
     useEffect(() => {
+
+        const getTargetURL = async () => {
+            let additional = {};
+            try {
+                additional = await getGeoLocation()
+            } catch (error) {
+                console.error(error);
+            }
+            try {
+                const pathname = window.location.pathname;
+                const target = pathname.split('/t/')[1];
+                axios.get(`${process.env.REACT_APP_CUSTOM_URL_ENDPOINT}/t/${target}`, { params: { additional } })
+                    .then(response => {
+                        window.location = response.data.url
+                    })
+                    .catch(err => {
+                        setrRedirectURLObject({
+                            url: `/404?target=${encodeURIComponent(window.location.href)}`
+                        })
+                    })
+            } catch (e) {
+                console.error(e);
+                setrRedirectURLObject({
+                    url: `/500?target=${encodeURIComponent(window.location.href)}`
+                })
+            }
+        }
+
         getTargetURL();
     })
     
