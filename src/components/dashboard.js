@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import axios from 'axios';
 import Form from 'react-bootstrap/Form';
 import { Redirect, Link } from "react-router-dom";
+import { getAxiosOptions } from '../utils'
 
 const StyledContainer = styled(Container)`
     margin-top: 75px;
@@ -34,27 +35,9 @@ const Dashboard = () => {
     const [urlObject, setURLObject] = useState({show: false});
     const [authFails, setAuthFails] = useState(false);
 
-    const getURLs = () => {
-        axios.get(process.env.REACT_APP_CUSTOM_URL_ENDPOINT + '/all-urls', { withCredentials: true })
-            .then(response => {
-                response.data && response.data.urls && setURLs(response.data.urls)
-            })
-            .catch(err => {
-                if(err.response && err.response.status === 401) setAuthFails(true)
-                console.error(err)
-            })
-            .finally(() => setUpdate(false))
-    }
-
     const deleteUrl = (id) => {
-        axios({
-            url: process.env.REACT_APP_CUSTOM_URL_ENDPOINT + '/url',
-            method: 'delete',
-            data: {
-                id
-            },
-            withCredentials: true
-        })
+
+        axios(getAxiosOptions('url', 'DELETE', { id }))
         .then(data => {
                 if (!data.error) {
                     setUpdate(true);
@@ -67,15 +50,8 @@ const Dashboard = () => {
         event.preventDefault();
         const url = event.target.url.value
         const title = event.target.title.value
-        axios({
-            url: process.env.REACT_APP_CUSTOM_URL_ENDPOINT + '/shorten-url',
-            method: 'post',
-            data: {
-                url, 
-                title
-            },
-            withCredentials: true
-        })
+
+        axios(getAxiosOptions('shorten-url', 'POST', { url, title }))
         .then(response => {
             setUpdate(true);
             setURLObject({
@@ -87,6 +63,17 @@ const Dashboard = () => {
     }
 
     useEffect(() => {
+        const getURLs = () => {
+            axios(getAxiosOptions('all-urls', 'GET'))
+                .then(response => {
+                    response.data && response.data.urls && setURLs(response.data.urls)
+                })
+                .catch(err => {
+                    if (err.response && err.response.status === 401) setAuthFails(true)
+                    console.error(err)
+                })
+                .finally(() => setUpdate(false))
+        }
         if(update) getURLs();
     }, [update])
 
