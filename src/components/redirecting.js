@@ -19,11 +19,29 @@ const Redirecting = () => {
 
     const [redirectURLObject, setrRedirectURLObject] = useState({});
 
-    const getTargetURL = () => {
+    const getGeoLocation = async () => {
+        try {
+            const response =  await axios.get(process.env.REACT_APP_ABSTRACT_API);
+            return response.data;
+        } catch(e) {
+            return e;
+        }
+    }
+
+    const getTargetURL = async () => {
+
+        let additional = {};
+
+        try {
+            additional = await getGeoLocation()
+        } catch (error) {
+            console.error(error);
+        }
+
         try {
             const pathname = window.location.pathname;
             const target = pathname.split('/t/')[1];
-            axios.get(`${process.env.REACT_APP_CUSTOM_URL_ENDPOINT}/t/${target}`)
+            axios.get(`${process.env.REACT_APP_CUSTOM_URL_ENDPOINT}/t/${target}`, { params: { additional } })
                 .then(response => {
                     window.location = response.data.url
                 })
@@ -41,11 +59,8 @@ const Redirecting = () => {
     }
 
     useEffect(() => {
-        getTargetURL()
-        return () => {
-            setrRedirectURLObject({});
-        };
-    }, [])
+        getTargetURL();
+    })
     
     if (redirectURLObject.url) 
     return <Redirect
