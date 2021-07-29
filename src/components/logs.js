@@ -10,6 +10,7 @@ import axios from 'axios';
 import ReactJson from 'react-json-view';
 import { Redirect, Link } from "react-router-dom";
 import moment from "moment";
+import { getAxiosOptions } from '../utils'
 
 const StyledContainer = styled(Container)`
     margin-top: 75px;
@@ -31,7 +32,7 @@ const Logs = () => {
     const [additionalObject, setAdditionalObject] = useState({})
 
     const getLogs = () => {
-        axios.get(process.env.REACT_APP_CUSTOM_URL_ENDPOINT + '/user-access-logs?sortBy=createdAt:desc', { withCredentials: true })
+        axios(getAxiosOptions('user-access-logs?sortBy=createdAt:desc', 'GET'))
             .then(response => {
                 if (response.data && response.data.logs) {
                     const logs = response.data.logs
