@@ -29,6 +29,7 @@ const Dashboard = () => {
 
     document.title = 'Dashboard';
 
+    const [disableSubmitBtn, setDisableSubmitBtn] = useState(false);
     const [update, setUpdate] = useState(true);
     const [alertObject, setAlertObject] = useState({show: false});
     const [urls, setURLs] = useState([]);
@@ -48,6 +49,7 @@ const Dashboard = () => {
 
     const shortenUrl = (event) => {
         event.preventDefault();
+        setDisableSubmitBtn(true);
         const url = event.target.url.value
         const title = event.target.title.value
 
@@ -75,7 +77,7 @@ const Dashboard = () => {
                 .finally(() => setUpdate(false))
         }
         if(update) getURLs();
-    }, [update])
+    }, [update, disableSubmitBtn])
 
     const copyToClipboard = str => {
         const el = document.createElement('textarea');
@@ -117,7 +119,7 @@ const Dashboard = () => {
                             <Form.Label>Custom Title</Form.Label>
                             <Form.Control type="text" placeholder="Custom Title" name="title"/>
                         </Form.Group>
-                        <Button variant="primary" type="submit">
+                        <Button variant="primary" type="submit" disabled={disableSubmitBtn}>
                             Submit
                         </Button>
                     </Form>
