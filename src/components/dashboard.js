@@ -61,7 +61,16 @@ const Dashboard = () => {
                 url: response.data.url
             });
         })
-        .catch()
+            .catch((error) => {
+                const errorResponse = error.response;
+                showAlert(
+                    `Error: 
+                    <b>
+                        ${errorResponse && errorResponse.data && errorResponse.data.error ? errorResponse.data.error : 'An Error Occured'}
+                    </b>`,
+                    'danger')
+            })
+        .finally(() => setDisableSubmitBtn(false))
     }
 
     useEffect(() => {
@@ -86,9 +95,14 @@ const Dashboard = () => {
         el.select();
         document.execCommand('copy');
         document.body.removeChild(el);
-        setAlertObject({ show: true, message: str })
-        setTimeout(() => setAlertObject({ show: false, message: str }), 5000)
+        
+        showAlert(`Copied <b>${str}</b> to the clipboard`, 'primary');
     };
+
+    const showAlert = (message, variant) => {
+        setAlertObject({ show: true, message, variant})
+        setTimeout(() => setAlertObject({ show: false, message, variant: variant }), 5000)
+    }
 
     if (authFails)
         return <Redirect to={{ pathname: '/login', search: `?message=${encodeURI('Wrong Cookie Set')}`}} />
@@ -184,8 +198,8 @@ const Dashboard = () => {
             </Row>
             <Row>
                 <Col>
-                    <StyledAlert show={alertObject.show} variant='primary'>
-                            Copied <b>{alertObject.message}</b> to the clipboard
+                    <StyledAlert show={alertObject.show} variant={alertObject.variant}>
+                        <div dangerouslySetInnerHTML={{__html: alertObject.message}} />
                     </StyledAlert>
                 </Col>
             </Row>
