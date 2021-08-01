@@ -9,7 +9,9 @@ export const getCookie = () => {
 }
 
 export const setCookie = (value) => {
-    Cookies.set('key', value);
+    Cookies.set('key', value, {
+        expires: 365
+    });
 }
 
 export const getAxiosOptions = (endpoint, method, data = {}) => {
