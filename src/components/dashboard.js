@@ -148,9 +148,9 @@ const Dashboard = () => {
                                 <th>#</th>
                                 <th>Title</th>
                                 <th>Count</th>
+                                <th>Copy</th>
                                 <th>To</th>
                                 <th>Delete</th>
-                                <th>Copy</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -160,18 +160,18 @@ const Dashboard = () => {
                                     <td>{url.fromUrl}</td>
                                     <td>{url.count >= 0 ? url.count : 'No Data'}</td>
                                     <td>
-                                        <Button href={url.toUrl} target="__blank">
+                                        <Button variant='success' onClick={() => copyToClipboard(window.location.origin + "/t/" + url.fromUrl)}>
+                                            <i className="far fa-copy"></i>
+                                        </Button>
+                                    </td>
+                                    <td>
+                                        <Button variant="secondary" size="sm" href={url.toUrl} target="__blank">
                                             <i className="fas fa-link"></i>
                                         </Button>
                                     </td>
                                     <td>
-                                        <Button onClick={() => deleteUrl(url._id)}>
+                                        <Button size="sm" variant='danger' onClick={() => deleteUrl(url._id)}>
                                             <i className="far fa-trash-alt"></i>
-                                        </Button>
-                                    </td>
-                                    <td>
-                                        <Button onClick={() => copyToClipboard(window.location.origin + "/t/" + url.fromUrl)}>
-                                            <i className="far fa-copy"></i>
                                         </Button>
                                     </td>
                                 </tr>
