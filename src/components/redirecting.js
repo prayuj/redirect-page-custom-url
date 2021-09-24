@@ -20,32 +20,48 @@ const StyledH4 = styled.h4`
     text-align: center;
 `;
 
+const StyledH6 = styled.h6`
+    text-align: center;
+`;
+
 const Redirecting = () => {
 
     const [redirectURLObject, setrRedirectURLObject] = useState({});
+    const [message, setMessage] = useState('');
+    const [shouldRun, setShouldRun] = useState(true);
 
     const getGeoLocation = async () => {
         try {
             const response =  await axios.get(process.env.REACT_APP_ABSTRACT_API);
             return response.data;
         } catch(e) {
-            return e;
+            console.error(e);
+            return {
+                message: e.message || 'An Error fetching IP information'
+            }
         }
     }
 
     useEffect(() => {
 
-        const getTargetURL = async () => {
+        const getMessage = (search) => {
+            const queryParams = new URLSearchParams(search);
+            setMessage(queryParams.get('message') || 'target URL');
+        }
+
+        const logUserInfo = async (target) => {
             let additional = {};
             try {
                 additional = await getGeoLocation()
+                axios.post(`${process.env.REACT_APP_CUSTOM_URL_ENDPOINT}/log/${target}`, { additional })
             } catch (error) {
                 console.error(error);
             }
+        }
+
+        const redirectToTargetURL = (target) => {
             try {
-                const pathname = window.location.pathname;
-                const target = pathname.split('/t/')[1];
-                axios.get(`${process.env.REACT_APP_CUSTOM_URL_ENDPOINT}/t/${target}`, { params: { additional } })
+                axios.get(`${process.env.REACT_APP_CUSTOM_URL_ENDPOINT}/t/${target}`)
                     .then(response => {
                         window.location = response.data.url
                     })
@@ -61,9 +77,16 @@ const Redirecting = () => {
                 })
             }
         }
+        if (shouldRun) {
+            setShouldRun(false);
+            getMessage(window.location.search);
 
-        getTargetURL();
-    })
+            const pathname = window.location.pathname;
+            const target = pathname.split('/t/')[1];
+            logUserInfo(target);
+            redirectToTargetURL(target);
+        }
+    }, [shouldRun])
     
     if (redirectURLObject.url) 
     return <Redirect
@@ -73,12 +96,19 @@ const Redirecting = () => {
     return (<StyledContainer fluid="lg">
         <Row>
             <Col>
-                <StyledH4>Redirecting "<span className="accent-style">{window.location.host + window.location.pathname}</span>" to target URL</StyledH4>
+                <StyledH4>Redirecting to
+                    {
+                    message !== undefined && message !== 'target URL'? 
+                        <span className="accent-style" style={{display: 'inline-block', marginLeft: '0.3em'}}> {'"' + message + '"'}</span>
+                        : <> {message}</>
+                    }
+                    </StyledH4>
                 <div className="spinner">
                     <div className="bounce1"></div>
                     <div className="bounce2"></div>
                     <div className="bounce3"></div>
                 </div>
+                <StyledH6><span className="accent-style">Source URL:</span> {window.location.host + window.location.pathname}</StyledH6>
             </Col>
         </Row>
     </StyledContainer>);
