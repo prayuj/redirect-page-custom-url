@@ -49,18 +49,15 @@ const Redirecting = () => {
             setMessage(queryParams.get('message') || 'target URL');
         }
 
-        const logUserInfo = async (target) => {
-            let additional = {};
+        const redirectToTargetURL = async (target) => {
             try {
-                additional = await getGeoLocation()
-                axios.post(`${process.env.REACT_APP_CUSTOM_URL_ENDPOINT}/log/${target}`, { additional })
-            } catch (error) {
-                console.error(error);
-            }
-        }
-
-        const redirectToTargetURL = (target) => {
-            try {
+                let additional = {};
+                try {
+                    additional = await getGeoLocation()
+                    await axios.post(`${process.env.REACT_APP_CUSTOM_URL_ENDPOINT}/log/${target}`, { additional })
+                } catch (error) {
+                    console.error(error);
+                }
                 axios.get(`${process.env.REACT_APP_CUSTOM_URL_ENDPOINT}/t/${target}`)
                     .then(response => {
                         window.location = response.data.url
@@ -83,7 +80,6 @@ const Redirecting = () => {
 
             const pathname = window.location.pathname;
             const target = pathname.split('/t/')[1];
-            logUserInfo(target);
             redirectToTargetURL(target);
         }
     }, [shouldRun])
