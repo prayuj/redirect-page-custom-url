@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -14,6 +14,9 @@ import { getAxiosOptions } from '../utils'
 
 const StyledContainer = styled(Container)`
     margin-top: 75px;
+    margin-bottom: 1em;
+    display: flex;
+    flex-direction: column;
 `;
 
 const StyledTable = styled(Table)`
@@ -21,38 +24,51 @@ const StyledTable = styled(Table)`
     color: inherit;
 `;
 
+const StyledLoadMoreButton = styled(Button)`
+    max-width: 150px;
+    align-self: center;
+`;
+
+const LIMIT = 20;
+
 const Logs = () => {
 
     document.title = 'Logs';
-
-    const [update, setUpdate] = useState(true);
     const [logs, setLogs] = useState([]);
     const [authFails, setAuthFails] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [additionalObject, setAdditionalObject] = useState({})
+    const [showLoadMore, setShowLoadMore] = useState(false);
+    const [skip, setSkip] = useState(0);
 
-    const getLogs = () => {
-        axios(getAxiosOptions('user-access-logs?sortBy=createdAt:desc', 'GET'))
+    const getLogs = useCallback(() => {
+        setShowLoadMore(false);
+        axios(getAxiosOptions(`user-access-logs?sortBy=createdAt:desc&limit=${LIMIT}&skip=${skip}`))
             .then(response => {
-                if (response.data && response.data.logs) {
+                if (response.data?.logs) {
+
+                    if (response.data.logs.length === 0) {
+                        setShowLoadMore(false);
+                        return;
+                    }
                     const logs = response.data.logs
                     logs.map(log => log.additional = JSON.parse(log.additional));
-                    setLogs(logs);
+                    setLogs(additionalLogs=>[...logs, ...additionalLogs]);
+                    setShowLoadMore(true);
                 }
             })
             .catch(err => {
                 if (err.response && err.response.status === 401) setAuthFails(true)
                 console.error(err)
             })
-            .finally(() => setUpdate(false))
-    }
+    }, [skip])
 
     const handleClose = () => setShowModal(false);
     const handleShow = () => setShowModal(true);
 
     useEffect(() => {
-        if (update) getLogs();
-    }, [update])
+        getLogs();
+    }, [getLogs, skip]);
 
     if (authFails)
         return <Redirect to={{ pathname: '/login', search: `?message=${encodeURI('Wrong Cookie Set')}` }} />
@@ -126,6 +142,7 @@ const Logs = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
+            {showLoadMore && <StyledLoadMoreButton onClick={() => setSkip(skip + LIMIT)} variant="success">Load More</StyledLoadMoreButton>}
         </StyledContainer>
      );
 }
