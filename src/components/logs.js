@@ -53,7 +53,7 @@ const Logs = () => {
                     }
                     const logs = response.data.logs
                     logs.map(log => log.additional = JSON.parse(log.additional));
-                    setLogs(additionalLogs=>[...logs, ...additionalLogs]);
+                    setLogs(previousLogs => [...previousLogs, ...logs]);
                     setShowLoadMore(true);
                 }
             })
@@ -103,7 +103,7 @@ const Logs = () => {
                         <tbody>
                             {
                             logs.map((log, index) =>
-                                <tr key={index}>
+                                <tr key={log._id}>
                                     <td>{index + 1}</td>
                                     <td>{log.additional ? log.additional.city : 'No City Found'}</td>
                                     <td>{log.url ? log.url : 'URL not Logged'}</td>
