@@ -17,9 +17,9 @@ function App() {
   return (
     <Router>
       <div className="App">
-      <a href="https://prayuj.tech" id="main-logo">
+      <a href="https://prayujpillai.tech" id="main-logo">
         <span>
-          <h2>prayuj</h2>
+          <h2>prayujpillai</h2>
         </span>
         <span className="accent-style">
           <h2>.tech</h2>
