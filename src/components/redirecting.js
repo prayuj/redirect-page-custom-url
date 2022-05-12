@@ -54,7 +54,7 @@ const Redirecting = () => {
                 let additional = {};
                 try {
                     additional = await getGeoLocation()
-                    await axios.post(`${process.env.REACT_APP_CUSTOM_URL_ENDPOINT}/log/${target}`, { additional })
+                    axios.post(`${process.env.REACT_APP_CUSTOM_URL_ENDPOINT}/log/${target}`, { additional })
                 } catch (error) {
                     console.error(error);
                 }
