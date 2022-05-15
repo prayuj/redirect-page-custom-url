@@ -22,8 +22,7 @@ export const getAxiosOptions = (endpoint, method, data = {}) => {
         data,
         headers: {
             key: getCookie()
-        },
-        withCredentials: true
+        }
     }
 
     return options;
