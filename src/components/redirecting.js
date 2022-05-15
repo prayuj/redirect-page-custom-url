@@ -54,11 +54,11 @@ const Redirecting = () => {
                 let additional = {};
                 try {
                     additional = await getGeoLocation()
-                    axios.post(`${process.env.REACT_APP_CUSTOM_URL_ENDPOINT}/log/${target}`, { additional })
+                    axios.post(`${process.env.REACT_APP_CUSTOM_URL_LAMBDA_ENDPOINT}/log/${target}`, { additional })
                 } catch (error) {
                     console.error(error);
                 }
-                axios.get(`${process.env.REACT_APP_CUSTOM_URL_ENDPOINT}/t/${target}`)
+                axios.get(`${process.env.REACT_APP_CUSTOM_URL_LAMBDA_ENDPOINT}/t/${target}`)
                     .then(response => {
                         window.location = response.data.url
                     })
