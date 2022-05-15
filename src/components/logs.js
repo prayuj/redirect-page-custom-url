@@ -52,7 +52,14 @@ const Logs = () => {
                         return;
                     }
                     const logs = response.data.logs
-                    logs.map(log => log.additional = JSON.parse(log.additional));
+                    logs.map(log => {
+                        try {
+                            log.additional = JSON.parse(log.additional)
+                        } catch (err) {
+                            log.additional = {}
+                        }
+                        return log.additional;
+                    });
                     setLogs(previousLogs => [...previousLogs, ...logs]);
                     setShowLoadMore(true);
                 }
