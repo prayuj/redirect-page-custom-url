@@ -10,7 +10,6 @@ import Login from './components/login';
 import Redirecting from './components/redirecting';
 import PrivateRoute from './components/privateRoute';
 import ErrorPages from './components/errorPages';
-import Logs from './components/logs';
 
 function App() {
 
@@ -28,9 +27,6 @@ function App() {
       <Switch>
         <PrivateRoute exact path="/">
           <Dashboard />
-        </PrivateRoute>
-        <PrivateRoute path="/logs">
-          <Logs />
         </PrivateRoute>
         <Route path="/t/:url">
           <Redirecting />
