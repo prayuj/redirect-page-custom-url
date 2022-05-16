@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from "axios";
 import {
     Redirect
@@ -6,6 +6,7 @@ import {
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import ProgressBar from 'react-bootstrap/ProgressBar'
 import styled from 'styled-components';
 
 const StyledContainer = styled(Container)`
@@ -15,6 +16,12 @@ const StyledContainer = styled(Container)`
     justify-content: center;
 `;
 
+const StyledProgressBar = styled(ProgressBar)`
+    margin: 2em auto;
+    .progress-bar {
+        background-color: var(--accent-color);
+    }
+`;
 
 const StyledH4 = styled.h4`
     text-align: center;
@@ -29,6 +36,7 @@ const Redirecting = () => {
     const [redirectURLObject, setrRedirectURLObject] = useState({});
     const [message, setMessage] = useState('');
     const [shouldRun, setShouldRun] = useState(true);
+    const [progressBarValue, setProgressBarValue] = useState(0);
 
     const getGeoLocation = async () => {
         try {
@@ -66,6 +74,7 @@ const Redirecting = () => {
                         } catch (error) {
                             console.error(error);
                         }
+                        setProgressBarValue(100);
                         window.location = response.data.url
                     })
                     .catch(err => {
@@ -89,6 +98,17 @@ const Redirecting = () => {
             redirectToTargetURL(target);
         }
     }, [shouldRun])
+
+    let timerRef = useRef(null);
+
+    useEffect(() => {
+        clearTimeout(timerRef.current);
+        timerRef.current = setTimeout(() => {
+            if (progressBarValue < 95) {
+                setProgressBarValue(progressBarValue + 5);
+            } else clearTimeout(timerRef.current);
+        }, 450);
+    })
     
     if (redirectURLObject.url) 
     return <Redirect
@@ -105,12 +125,8 @@ const Redirecting = () => {
                         : <> {message}</>
                     }
                     </StyledH4>
-                <div className="spinner">
-                    <div className="bounce1"></div>
-                    <div className="bounce2"></div>
-                    <div className="bounce3"></div>
-                </div>
                 <StyledH6><span className="accent-style">Source URL:</span> {window.location.host + window.location.pathname}</StyledH6>
+                <StyledProgressBar animated now={progressBarValue} />
             </Col>
         </Row>
     </StyledContainer>);
