@@ -52,14 +52,20 @@ const Redirecting = () => {
         const redirectToTargetURL = async (target) => {
             try {
                 let additional = {};
+                let loggingPromise;
                 try {
                     additional = await getGeoLocation()
-                    axios.post(`${process.env.REACT_APP_CUSTOM_URL_LAMBDA_ENDPOINT}/log/${target}`, { additional })
+                    loggingPromise = axios.post(`${process.env.REACT_APP_CUSTOM_URL_LAMBDA_ENDPOINT}/log/${target}`, { additional })
                 } catch (error) {
                     console.error(error);
                 }
                 axios.get(`${process.env.REACT_APP_CUSTOM_URL_LAMBDA_ENDPOINT}/t/${target}`)
-                    .then(response => {
+                    .then(async (response) => {
+                        try {
+                            await loggingPromise;
+                        } catch (error) {
+                            console.error(error);
+                        }
                         window.location = response.data.url
                     })
                     .catch(err => {
