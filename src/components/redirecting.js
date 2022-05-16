@@ -62,12 +62,18 @@ const Redirecting = () => {
                 let additional = {};
                 let loggingPromise;
                 try {
-                    additional = await getGeoLocation()
-                    loggingPromise = axios.post(`${process.env.REACT_APP_CUSTOM_URL_LAMBDA_ENDPOINT}/log/${target}`, { additional })
+                    let tempData = await getGeoLocation()
+                    additional = {
+                        ip: tempData.ip_address,
+                        country: tempData.country,
+                        city: tempData.city,
+                        timezone: tempData.timezone.abbreviation,
+                        isVpn: tempData.security.is_vpn
+                    }
                 } catch (error) {
                     console.error(error);
                 }
-                axios.get(`${process.env.REACT_APP_CUSTOM_URL_LAMBDA_ENDPOINT}/t/${target}`)
+                axios.get(`${process.env.REACT_APP_CUSTOM_URL_LAMBDA_ENDPOINT}/t/${target}?additional=${JSON.stringify(additional)}`)
                     .then(async (response) => {
                         try {
                             await loggingPromise;
