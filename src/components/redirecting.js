@@ -105,9 +105,9 @@ const Redirecting = () => {
         clearTimeout(timerRef.current);
         timerRef.current = setTimeout(() => {
             if (progressBarValue < 95) {
-                setProgressBarValue(progressBarValue + 5);
+                setProgressBarValue(progressBarValue + 1);
             } else clearTimeout(timerRef.current);
-        }, 450);
+        }, 150);
     })
     
     if (redirectURLObject.url) 
