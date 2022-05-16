@@ -73,8 +73,9 @@ const Redirecting = () => {
                 } catch (error) {
                     console.error(error);
                 }
-                axios.get(`${process.env.REACT_APP_CUSTOM_URL_LAMBDA_ENDPOINT}/t/${target}?additional=${JSON.stringify(additional)}`)
-                    .then(async (response) => {
+                axios.get(`${process.env.REACT_APP_CUSTOM_URL_LAMBDA_ENDPOINT}/t/${target}`, {
+                    params: additional
+                }).then(async (response) => {
                         try {
                             await loggingPromise;
                         } catch (error) {
