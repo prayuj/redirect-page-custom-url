@@ -12,6 +12,7 @@ import styled from 'styled-components';
 const StyledContainer = styled(Container)`
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
 `;
@@ -27,7 +28,10 @@ const StyledH4 = styled.h4`
     text-align: center;
 `;
 
-const StyledH6 = styled.h6`
+const StyledSmall = styled.small`
+    position: absolute;
+    bottom: 10px;
+    margin: 10px;
     text-align: center;
 `;
 
@@ -75,7 +79,8 @@ const Redirecting = () => {
                 }
                 axios.get(`${process.env.REACT_APP_CUSTOM_URL_LAMBDA_ENDPOINT}/t/${target}`, {
                     params: additional
-                }).then(async (response) => {
+                })
+                .then(async (response) => {
                         try {
                             await loggingPromise;
                         } catch (error) {
@@ -84,7 +89,7 @@ const Redirecting = () => {
                         setProgressBarValue(100);
                         window.location = response.data.url
                     })
-                    .catch(err => {
+                .catch(err => {
                         setrRedirectURLObject({
                             url: `/404?target=${encodeURIComponent(window.location.href)}`
                         })
@@ -132,10 +137,10 @@ const Redirecting = () => {
                         : <> {message}</>
                     }
                     </StyledH4>
-                <StyledH6><span className="accent-style">Source URL:</span> {window.location.host + window.location.pathname}</StyledH6>
                 <StyledProgressBar animated now={progressBarValue} />
             </Col>
         </Row>
+        <StyledSmall><span className="accent-style">Source URL:</span> {window.location.host + window.location.pathname}</StyledSmall>
     </StyledContainer>);
 
 }
