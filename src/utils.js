@@ -17,13 +17,12 @@ export const setCookie = (value) => {
 export const getAxiosOptions = (endpoint, method, data = {}) => {
 
     const options = {
-        url: `${process.env.REACT_APP_CUSTOM_URL_ENDPOINT}/${endpoint}`,
+        url: `${process.env.REACT_APP_CUSTOM_URL_LAMBDA_ENDPOINT}/${endpoint}`,
         method,
         data,
         headers: {
             key: getCookie()
-        },
-        withCredentials: true
+        }
     }
 
     return options;

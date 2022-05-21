@@ -8,7 +8,7 @@ import Alert from 'react-bootstrap/Alert';
 import styled from 'styled-components';
 import axios from 'axios';
 import Form from 'react-bootstrap/Form';
-import { Redirect, Link } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { getAxiosOptions } from '../utils'
 
 const StyledContainer = styled(Container)`
@@ -36,9 +36,9 @@ const Dashboard = () => {
     const [urlObject, setURLObject] = useState({show: false});
     const [authFails, setAuthFails] = useState(false);
 
-    const deleteUrl = (id) => {
+    const deleteUrl = (url) => {
 
-        axios(getAxiosOptions('url', 'DELETE', { id }))
+        axios(getAxiosOptions('url', 'DELETE', { url }))
         .then(data => {
                 if (!data.error) {
                     setUpdate(true);
@@ -77,7 +77,7 @@ const Dashboard = () => {
         const getURLs = () => {
             axios(getAxiosOptions('all-urls', 'GET'))
                 .then(response => {
-                    response.data && response.data.urls && setURLs(response.data.urls)
+                    response.data && response.data.urls && setURLs(response.data?.urls?.sort((a, b)=>b.hits - a.hits));
                 })
                 .catch(err => {
                     if (err.response && err.response.status === 401) setAuthFails(true)
@@ -111,14 +111,6 @@ const Dashboard = () => {
             <Row>
                 <Col xs={10} lg={11}>
                     <h1>Prayuj's URL Shortener</h1>
-                    
-                </Col>
-                <Col xs={2} lg={1}>
-                    <Link to='/logs'>
-                        <Button>
-                            <i className="fas fa-print"></i>
-                        </Button>
-                    </Link>
                 </Col>
             </Row>
             <Row>
@@ -174,7 +166,7 @@ const Dashboard = () => {
                                 <tr key={index}>
                                     <td>{index + 1}</td>
                                     <td>{url.fromUrl}</td>
-                                    <td>{url.count >= 0 ? url.count : 'No Data'}</td>
+                                    <td>{url.hits >= 0 ? url.hits : 'No Data'}</td>
                                     <td>
                                         <Button variant='success' onClick={() => copyToClipboard(window.location.origin + "/t/" + url.fromUrl)}>
                                             <i className="far fa-copy"></i>
@@ -186,7 +178,7 @@ const Dashboard = () => {
                                         </Button>
                                     </td>
                                     <td>
-                                        <Button size="sm" variant='danger' onClick={() => deleteUrl(url._id)}>
+                                        <Button size="sm" variant='danger' onClick={() => deleteUrl(url.fromUrl)}>
                                             <i className="far fa-trash-alt"></i>
                                         </Button>
                                     </td>

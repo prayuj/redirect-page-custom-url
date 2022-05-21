@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from "axios";
 import {
     Redirect
@@ -6,21 +6,32 @@ import {
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import ProgressBar from 'react-bootstrap/ProgressBar'
 import styled from 'styled-components';
 
 const StyledContainer = styled(Container)`
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
 `;
 
+const StyledProgressBar = styled(ProgressBar)`
+    margin: 2em auto;
+    .progress-bar {
+        background-color: var(--accent-color);
+    }
+`;
 
 const StyledH4 = styled.h4`
     text-align: center;
 `;
 
-const StyledH6 = styled.h6`
+const StyledSmall = styled.small`
+    position: absolute;
+    bottom: 10px;
+    margin: 10px;
     text-align: center;
 `;
 
@@ -29,6 +40,7 @@ const Redirecting = () => {
     const [redirectURLObject, setrRedirectURLObject] = useState({});
     const [message, setMessage] = useState('');
     const [shouldRun, setShouldRun] = useState(true);
+    const [progressBarValue, setProgressBarValue] = useState(0);
 
     const getGeoLocation = async () => {
         try {
@@ -52,17 +64,32 @@ const Redirecting = () => {
         const redirectToTargetURL = async (target) => {
             try {
                 let additional = {};
+                let loggingPromise;
                 try {
-                    additional = await getGeoLocation()
-                    axios.post(`${process.env.REACT_APP_CUSTOM_URL_ENDPOINT}/log/${target}`, { additional })
+                    let tempData = await getGeoLocation()
+                    additional = {
+                        ip: tempData.ip_address,
+                        country: tempData.country,
+                        city: tempData.city,
+                        timezone: tempData.timezone.abbreviation,
+                        isVpn: tempData.security.is_vpn
+                    }
                 } catch (error) {
                     console.error(error);
                 }
-                axios.get(`${process.env.REACT_APP_CUSTOM_URL_ENDPOINT}/t/${target}`)
-                    .then(response => {
+                axios.get(`${process.env.REACT_APP_CUSTOM_URL_LAMBDA_ENDPOINT}/t/${target}`, {
+                    params: additional
+                })
+                .then(async (response) => {
+                        try {
+                            await loggingPromise;
+                        } catch (error) {
+                            console.error(error);
+                        }
+                        setProgressBarValue(100);
                         window.location = response.data.url
                     })
-                    .catch(err => {
+                .catch(err => {
                         setrRedirectURLObject({
                             url: `/404?target=${encodeURIComponent(window.location.href)}`
                         })
@@ -83,6 +110,17 @@ const Redirecting = () => {
             redirectToTargetURL(target);
         }
     }, [shouldRun])
+
+    let timerRef = useRef(null);
+
+    useEffect(() => {
+        clearTimeout(timerRef.current);
+        timerRef.current = setTimeout(() => {
+            if (progressBarValue < 95) {
+                setProgressBarValue(progressBarValue + 1);
+            } else clearTimeout(timerRef.current);
+        }, 150);
+    })
     
     if (redirectURLObject.url) 
     return <Redirect
@@ -99,14 +137,10 @@ const Redirecting = () => {
                         : <> {message}</>
                     }
                     </StyledH4>
-                <div className="spinner">
-                    <div className="bounce1"></div>
-                    <div className="bounce2"></div>
-                    <div className="bounce3"></div>
-                </div>
-                <StyledH6><span className="accent-style">Source URL:</span> {window.location.host + window.location.pathname}</StyledH6>
+                <StyledProgressBar animated now={progressBarValue} />
             </Col>
         </Row>
+        <StyledSmall><span className="accent-style">Source URL:</span> {window.location.host + window.location.pathname}</StyledSmall>
     </StyledContainer>);
 
 }
