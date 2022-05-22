@@ -8,7 +8,7 @@ import Alert from 'react-bootstrap/Alert';
 import styled from 'styled-components';
 import axios from 'axios';
 import Form from 'react-bootstrap/Form';
-import { Redirect } from "react-router-dom";
+import { Redirect, Link } from "react-router-dom";
 import { getAxiosOptions } from '../utils'
 
 const StyledContainer = styled(Container)`
@@ -111,6 +111,13 @@ const Dashboard = () => {
             <Row>
                 <Col xs={10} lg={11}>
                     <h1>Prayuj's URL Shortener</h1>
+                </Col>
+                <Col xs={2} lg={1}>
+                    <Link to='/logs'>
+                        <Button>
+                            <i className="fas fa-print"></i>
+                        </Button>
+                    </Link>
                 </Col>
             </Row>
             <Row>
