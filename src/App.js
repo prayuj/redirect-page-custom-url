@@ -13,6 +13,7 @@ import React, { Suspense } from 'react';
 
 const Dashboard = React.lazy(() => import('./components/dashboard'));
 const Login = React.lazy(() => import('./components/login'));
+const Logs = React.lazy(() => import('./components/logs'));
 
 function App() {
 
@@ -33,6 +34,10 @@ function App() {
             <Dashboard />
           </Suspense>
         </PrivateRoute>
+        <PrivateRoute exact path="/logs">
+          <Suspense fallback={<Loading />}>
+            <Logs />
+          </Suspense>
         </PrivateRoute>
         <Route path="/t/:url">
           <Redirecting />
