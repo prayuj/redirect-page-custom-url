@@ -20,9 +20,11 @@ const StyledAlert = styled(Alert)`
 `;
 
 const Login = ({props}) => {
+    document.title = 'Login';
     const [value, setValue] = useState('');
     const [authSuccess, setAuthSuccess] = useState(false);
     const [alertObject, setAlertObject] = useState({show: false});
+    const [redirectTo, setRedirectTo] = useState('');
 
     useEffect(() => {
         const searchObject = new URLSearchParams(window.location.search);
@@ -31,10 +33,13 @@ const Login = ({props}) => {
             show: true, 
             message: searchObject.get('message')
         });
+        if(searchObject.has('redirectTo')) {
+            setRedirectTo(searchObject.get('redirectTo'));
+        }
     }, []);
 
     if (authSuccess)
-        return <Redirect to='/' />
+        return <Redirect to={`/${redirectTo}`} />
 
     return (
     <StyledContainer fluid="lg">
