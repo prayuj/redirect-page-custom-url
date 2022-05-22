@@ -1,6 +1,7 @@
 import axios from "axios";
 import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
+import { Redirect, Link } from "react-router-dom";
 import { getAxiosOptions } from "../utils";
 import moment from "moment";
 import Container from 'react-bootstrap/Container';
@@ -8,7 +9,8 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Table from "react-bootstrap/Table";
 import Pagination from 'react-bootstrap/Pagination';
-import PageItem from 'react-bootstrap/PageItem'
+import PageItem from 'react-bootstrap/PageItem';
+import Button from 'react-bootstrap/Button';
 
 const StyledContainer = styled(Container)`
     margin-top: 75px;
@@ -27,10 +29,13 @@ const Timestamp = styled.td`
 
 const Logs = () => {
 
+    document.title = 'Logs';
+
     const [availableStreams, setAvailableStreams] = useState([]);
     const [currentStream, setCurrentStream] = useState("");
     const [logs, setLogs] = useState([]);
     const [loadingMessage, setLoadingMessage] = useState("Fetching Logs...");
+    const [authFails, setAuthFails] = useState(false);
 
     const streamToLogsMapping = useRef({});
 
@@ -42,6 +47,7 @@ const Logs = () => {
                     setAvailableStreams(response.data.logStreams);
                 }
             } catch (error) {
+                if (error.response && error.response.status === 401) setAuthFails(true)
                 setLoadingMessage("Error fetching logs: " + error.message);
             }
         }
@@ -59,12 +65,12 @@ const Logs = () => {
                     logStreamName: currentStream
                 }));
                 if (response.data?.events){
-                    console.log(response.data.events);
                     streamToLogsMapping.current[currentStream] = response.data.events;
                     setLogs(response.data.events);
                 }
             }
             catch (error) {
+                if (error.response && error.response.status === 401) setAuthFails(true)
                 setLoadingMessage("Error fetching logs: " + error.message);
             }
         };
@@ -78,7 +84,22 @@ const Logs = () => {
         setCurrentStream(availableStreams[0]?.logStreamName);
     }, [availableStreams]);
 
+    if (authFails)
+        return <Redirect to={{ pathname: '/login', search: `?message=${encodeURI('Wrong Cookie Set')}` }} />
+
     return ( <StyledContainer>
+        <Row>
+            <Col xs={10} lg={11}>
+                <h1>Logs</h1>
+            </Col>
+            <Col xs={2} lg={1}>
+                <Link to='/'>
+                    <Button>
+                        <i className="fas fa-home"></i>
+                    </Button>
+                </Link>
+            </Col>
+        </Row>
         <Row>
             <Col>
                 <StyledPagination>
