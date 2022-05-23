@@ -14,7 +14,6 @@
     "react-bootstrap": "^2.0.0-beta.4",
     "react-cookie": "^4.0.3",
     "react-dom": "^17.0.2",
-    "react-json-view": "^1.21.3",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "styled-components": "^5.3.0",
@@ -26,7 +25,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "dev": "env-cmd -f ./config/dev.env react-scripts start",
-    "prod": "env-cmd -f ./config/prod.env react-scripts start"
+    "prod": "env-cmd -f ./config/prod.env react-scripts start  --port=3001"
   },
   "eslintConfig": {
     "extends": [

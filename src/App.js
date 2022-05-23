@@ -5,11 +5,15 @@ import {
   Switch,
   Route
 } from "react-router-dom";
-import Dashboard from './components/dashboard';
-import Login from './components/login';
 import Redirecting from './components/redirecting';
 import PrivateRoute from './components/privateRoute';
 import ErrorPages from './components/errorPages';
+import Loading from './components/loading';
+import React, { Suspense } from 'react';
+
+const Dashboard = React.lazy(() => import('./components/dashboard'));
+const Login = React.lazy(() => import('./components/login'));
+const Logs = React.lazy(() => import('./components/logs'));
 
 function App() {
 
@@ -26,13 +30,22 @@ function App() {
       </a>
       <Switch>
         <PrivateRoute exact path="/">
-          <Dashboard />
+          <Suspense fallback={<Loading />}>
+            <Dashboard />
+          </Suspense>
+        </PrivateRoute>
+        <PrivateRoute exact path="/logs">
+          <Suspense fallback={<Loading />}>
+            <Logs />
+          </Suspense>
         </PrivateRoute>
         <Route path="/t/:url">
           <Redirecting />
         </Route>
         <Route path="/login">
-          <Login />
+          <Suspense fallback={<Loading />}>
+            <Login />
+          </Suspense>
         </Route>
         <Route path="/500">
             <ErrorPages title="500 - Internal Error" />

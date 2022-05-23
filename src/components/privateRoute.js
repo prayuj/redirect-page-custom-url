@@ -14,7 +14,7 @@ const PrivateRoute = ({ children, ...rest }) => {
                 <Redirect
                     to={{
                         pathname: "/login",
-                        search: `?message=${encodeURI('No Cookie Present')}`
+                        search: `?message=${encodeURI('No Cookie Present')}&redirectTo=${rest?.path?.split('/')[1]||''}`,
                     }}
                 />
             )

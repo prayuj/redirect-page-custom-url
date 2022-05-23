@@ -14,10 +14,11 @@ export const setCookie = (value) => {
     });
 }
 
-export const getAxiosOptions = (endpoint, method, data = {}) => {
+export const getAxiosOptions = (endpoint, method, data = {}, params={}) => {
 
     const options = {
         url: `${process.env.REACT_APP_CUSTOM_URL_LAMBDA_ENDPOINT}/${endpoint}`,
+        params,
         method,
         data,
         headers: {
