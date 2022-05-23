@@ -20,7 +20,11 @@ const StyledTable = styled(Table)`
 `;
 
 const StyledPagination = styled(Pagination)`
-    justify-content: center;
+    overflow-x: scroll;
+    @media (min-width: 992px) {
+        justify-content: center;
+        overflow-x: auto;
+    }
 `;
 
 const Timestamp = styled.td`
@@ -34,7 +38,7 @@ const Logs = () => {
     const [availableStreams, setAvailableStreams] = useState([]);
     const [currentStream, setCurrentStream] = useState("");
     const [logs, setLogs] = useState([]);
-    const [loadingMessage, setLoadingMessage] = useState("Fetching Logs...");
+    const [loadingMessage, setLoadingMessage] = useState("Fetching Available Streams...");
     const [authFails, setAuthFails] = useState(false);
 
     const streamToLogsMapping = useRef({});
@@ -76,6 +80,7 @@ const Logs = () => {
         };
         setLogs([]);
         if(currentStream) {
+            setLoadingMessage("Fetching logs for stream...");
             fetchLogs();
         }
     }, [currentStream]);
@@ -85,7 +90,7 @@ const Logs = () => {
     }, [availableStreams]);
 
     if (authFails)
-        return <Redirect to={{ pathname: '/login', search: `?message=${encodeURI('Wrong Cookie Set')}` }} />
+        return <Redirect to={{ pathname: '/login', search: `?message=${encodeURI('Wrong Cookie Set')}&redirectTo=logs` }} />
 
     return ( <StyledContainer>
         <Row>
