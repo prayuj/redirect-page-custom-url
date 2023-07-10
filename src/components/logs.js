@@ -68,7 +68,7 @@ const Logs = () => {
                 const response = await axios(getAxiosOptions("get-logs-from-stream", "GET", {}, {
                     logStreamName: currentStream
                 }));
-                if (response.data?.events){
+                if (response.data?.events && response.data.events.length > 0){
                     streamToLogsMapping.current[currentStream] = response.data.events;
                     setLogs(response.data.events);
                 } else {
