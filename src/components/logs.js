@@ -71,6 +71,8 @@ const Logs = () => {
                 if (response.data?.events){
                     streamToLogsMapping.current[currentStream] = response.data.events;
                     setLogs(response.data.events);
+                } else {
+                    setLoadingMessage("No events for this page");
                 }
             }
             catch (error) {
