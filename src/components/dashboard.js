@@ -38,7 +38,7 @@ const Dashboard = () => {
 
     const deleteUrl = (url) => {
 
-        axios(getAxiosOptions('url', 'DELETE', { url }))
+        axios(getAxiosOptions('auth/delete-url', 'POST', { slug: url }))
         .then(data => {
                 if (!data.error) {
                     setUpdate(true);
@@ -50,21 +50,21 @@ const Dashboard = () => {
     const shortenUrl = (event) => {
         event.preventDefault();
         setDisableSubmitBtn(true);
-        const url = event.target.url.value
+        const toUrl = event.target.url.value
         const title = event.target.title.value
 
-        axios(getAxiosOptions('shorten-url', 'POST', { url, title }))
+        axios(getAxiosOptions('auth/shorten-url', 'POST', { toUrl, title }))
         .then(response => {
             setUpdate(true);
             setURLObject({
-                show: true, 
+                show: true,
                 url: response.data.url
             });
         })
             .catch((error) => {
                 const errorResponse = error.response;
                 showAlert(
-                    `Error: 
+                    `Error:
                     <b>
                         ${errorResponse && errorResponse.data && errorResponse.data.error ? errorResponse.data.error : 'An Error Occured'}
                     </b>`,
@@ -75,9 +75,9 @@ const Dashboard = () => {
 
     useEffect(() => {
         const getURLs = () => {
-            axios(getAxiosOptions('all-urls', 'GET'))
+            axios(getAxiosOptions('auth/all-urls', 'GET'))
                 .then(response => {
-                    response.data && response.data.urls && setURLs(response.data?.urls?.sort((a, b)=>b.hits - a.hits));
+                    response.data && response.data.urls && setURLs(response.data?.urls?.sort((a, b)=>b.count - a.count));
                 })
                 .catch(err => {
                     if (err.response && err.response.status === 401) setAuthFails(true)
@@ -95,7 +95,7 @@ const Dashboard = () => {
         el.select();
         document.execCommand('copy');
         document.body.removeChild(el);
-        
+
         showAlert(`Copied <b>${str}</b> to the clipboard`, 'primary');
     };
 
@@ -106,7 +106,7 @@ const Dashboard = () => {
 
     if (authFails)
         return <Redirect to={{ pathname: '/login', search: `?message=${encodeURI('Wrong Cookie Set')}`}} />
-    return ( 
+    return (
         <StyledContainer fluid="lg">
             <Row>
                 <Col xs={10} lg={11}>
@@ -169,23 +169,23 @@ const Dashboard = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {urls.map((url, index) => 
+                            {urls.map((url, index) =>
                                 <tr key={index}>
                                     <td>{index + 1}</td>
-                                    <td>{url.fromUrl}</td>
-                                    <td>{url.hits >= 0 ? url.hits : 'No Data'}</td>
+                                    <td>{url.slug}</td>
+                                    <td>{url.count >= 0 ? url.count : 'No Data'}</td>
                                     <td>
-                                        <Button variant='success' onClick={() => copyToClipboard(window.location.origin + "/t/" + url.fromUrl)}>
+                                        <Button variant='success' onClick={() => copyToClipboard(window.location.origin + "/t/" + url.slug)}>
                                             <i className="far fa-copy"></i>
                                         </Button>
                                     </td>
                                     <td>
-                                        <Button variant="secondary" size="sm" href={url.toUrl} target="__blank">
+                                        <Button variant="secondary" size="sm" href={url.targetUrl} target="__blank">
                                             <i className="fas fa-link"></i>
                                         </Button>
                                     </td>
                                     <td>
-                                        <Button size="sm" variant='danger' onClick={() => deleteUrl(url.fromUrl)}>
+                                        <Button size="sm" variant='danger' onClick={() => deleteUrl(url.slug)}>
                                             <i className="far fa-trash-alt"></i>
                                         </Button>
                                     </td>
@@ -205,5 +205,5 @@ const Dashboard = () => {
         </StyledContainer>
      );
 }
- 
+
 export default Dashboard;

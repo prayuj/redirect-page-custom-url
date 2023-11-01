@@ -1,22 +1,19 @@
+import { useState, useEffect, useCallback } from 'react';
 import axios from "axios";
-import styled from "styled-components";
-import { useState, useEffect, useRef } from "react";
-import { Redirect, Link } from "react-router-dom";
 import { getAxiosOptions } from "../utils";
+import styled from "styled-components";
+import { Link } from "react-router-dom";
 import moment from "moment";
 import Container from 'react-bootstrap/Container';
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Table from "react-bootstrap/Table";
 import Pagination from 'react-bootstrap/Pagination';
-import PageItem from 'react-bootstrap/PageItem';
 import Button from 'react-bootstrap/Button';
+import Accordion from 'react-bootstrap/Accordion';
+
 
 const StyledContainer = styled(Container)`
     margin-top: 75px;
-`;
-const StyledTable = styled(Table)`
-    color: inherit;
 `;
 
 const StyledPagination = styled(Pagination)`
@@ -27,74 +24,54 @@ const StyledPagination = styled(Pagination)`
     }
 `;
 
-const Timestamp = styled.td`
-    font-size: 0.8rem;
-`
+const StyledAccordionItem = styled(Accordion.Item)`
+    background-color: var(--lighter-dark-color);
+`;
 
-const Logs = () => {
+const loadingMessage = 'Fetching logs...';
 
+const PaginationComponent = ({ numberOfPages, active, pageChange }) => {
+    let items = [];
+    for (let number = 1; number <= numberOfPages; number++) {
+        items.push(
+            <Pagination.Item key={number} active={number === active} onClick={() => pageChange(number)}>
+            {number}
+            </Pagination.Item>,
+        );
+    }
+    return <StyledPagination>
+            {items}
+        </StyledPagination>
+}
+
+export default function Logs() {
     document.title = 'Logs';
-
-    const [availableStreams, setAvailableStreams] = useState([]);
-    const [currentStream, setCurrentStream] = useState("");
+    const [numberOfPages, setNumberOfPages] = useState(0);
+    const [active, setActive] = useState(0);
     const [logs, setLogs] = useState([]);
-    const [loadingMessage, setLoadingMessage] = useState("Fetching Available Streams...");
-    const [authFails, setAuthFails] = useState(false);
-
-    const streamToLogsMapping = useRef({});
-
+    const [isLoading, setIsLoading] = useState(true);
+    const limit = 20;
+    const pageChange = useCallback((number) => {
+        setActive(number);
+        setIsLoading(true);
+    }, [setActive, setIsLoading]);
     useEffect(() => {
-        const fetchAvailableStreams = async () => {
-            try {
-                const response = await axios(getAxiosOptions("get-cloudwatch-log-streams", "GET"));
-                if (response.data?.logStreams) {
-                    setAvailableStreams(response.data.logStreams);
-                }
-            } catch (error) {
-                if (error.response && error.response.status === 401) setAuthFails(true)
-                setLoadingMessage("Error fetching logs: " + error.message);
-            }
-        }
-        fetchAvailableStreams();
+        axios(getAxiosOptions('auth/get-number-of-logs'))
+        .then(response => {
+            setNumberOfPages(Math.ceil(response.data.count / limit));
+            setActive(1);
+        });
     }, []);
-
     useEffect(() => {
-        const fetchLogs = async () => {
-            try {
-                if (streamToLogsMapping.current[currentStream]) {
-                    setLogs(streamToLogsMapping.current[currentStream]);
-                    return;
-                }
-                const response = await axios(getAxiosOptions("get-logs-from-stream", "GET", {}, {
-                    logStreamName: currentStream
-                }));
-                if (response.data?.events && response.data.events.length > 0){
-                    streamToLogsMapping.current[currentStream] = response.data.events;
-                    setLogs(response.data.events);
-                } else {
-                    setLoadingMessage("No events for this page");
-                }
-            }
-            catch (error) {
-                if (error.response && error.response.status === 401) setAuthFails(true)
-                setLoadingMessage("Error fetching logs: " + error.message);
-            }
-        };
-        setLogs([]);
-        if(currentStream) {
-            setLoadingMessage("Fetching logs for stream...");
-            fetchLogs();
-        }
-    }, [currentStream]);
-
-    useEffect(() => {
-        setCurrentStream(availableStreams[0]?.logStreamName);
-    }, [availableStreams]);
-
-    if (authFails)
-        return <Redirect to={{ pathname: '/login', search: `?message=${encodeURI('Wrong Cookie Set')}&redirectTo=logs` }} />
-
-    return ( <StyledContainer>
+        if (active > 0)
+            axios(getAxiosOptions('auth/logs?limit=' + limit + '&offset=' + (active - 1) * limit))
+            .then(response => {
+                setLogs(response.data.logs);
+                setIsLoading(false);
+            });
+    }, [active]);
+  return (
+    <StyledContainer>
         <Row>
             <Col xs={10} lg={11}>
                 <h1>Logs</h1>
@@ -109,31 +86,26 @@ const Logs = () => {
         </Row>
         <Row>
             <Col>
-                <StyledPagination>
-                    {availableStreams.map((stream, index) => 
-                        <PageItem key={stream.logStreamName} active={currentStream === stream.logStreamName} onClick={() => setCurrentStream(stream.logStreamName)}>{index+1}</PageItem>
-                    )}
-                </StyledPagination>
-                {logs.length > 0 ? 
-                    <StyledTable responsive>
-                        <thead>
-                            <tr>
-                                <th>Time</th>
-                                <th>Message</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {logs.map((log, index) => 
-                                <tr key={index}>
-                                    <Timestamp>{moment(log.timestamp).format("MMMM Do YYYY, h:mm:ss a")}</Timestamp>
-                                    <td>{log.message}</td>
-                                </tr>)}
-                        </tbody>
-
-                    </StyledTable> : <p>{loadingMessage}</p>}
+                <PaginationComponent numberOfPages={numberOfPages} active={active} pageChange={pageChange}/>
+                {!isLoading ?
+                    <Accordion >
+                        {logs.map((log, _) =>
+                            <StyledAccordionItem eventKey={log.timestamp}>
+                                <Accordion.Header>
+                                    {log.slug + ": " + moment(log.timestamp).format("MMMM Do YYYY, h:mm:ss a")}
+                                </Accordion.Header>
+                                <Accordion.Body>
+                                    <pre>
+                                    {log.parameters}
+                                    </pre>
+                                </Accordion.Body>
+                            </StyledAccordionItem>
+                        )}
+                    </Accordion> :
+                <p>{loadingMessage}</p>
+                }
             </Col>
         </Row>
-    </StyledContainer> );
+    </StyledContainer>
+  )
 }
- 
-export default Logs;

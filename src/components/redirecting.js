@@ -64,32 +64,24 @@ const Redirecting = () => {
         const redirectToTargetURL = async (target) => {
             try {
                 let additional = {};
-                let loggingPromise;
                 try {
-                    let tempData = await getGeoLocation()
-                    additional = {
-                        ip: tempData.ip_address,
-                        country: tempData.country,
-                        city: tempData.city,
-                        timezone: tempData.timezone.abbreviation,
-                        isVpn: tempData.security.is_vpn
-                    }
+                    additional = await getGeoLocation();
                 } catch (error) {
                     console.error(error);
                 }
-                axios.get(`${process.env.REACT_APP_CUSTOM_URL_LAMBDA_ENDPOINT}/t/${target}`, {
-                    params: additional
-                })
-                .then(async (response) => {
-                        try {
-                            await loggingPromise;
-                        } catch (error) {
-                            console.error(error);
-                        }
+                axios({
+                    url: `${process.env.REACT_APP_CUSTOM_URL_LAMBDA_ENDPOINT}/update-and-log-query-details/${target}`,
+                    method: 'POST',
+                    params: additional,
+                }).catch(() => {});
+                axios({
+                    url: `${process.env.REACT_APP_CUSTOM_URL_LAMBDA_ENDPOINT}/t/${target}`,
+                    method: 'GET',
+                }).then(response => {
                         setProgressBarValue(100);
                         window.location = response.data.url
                     })
-                .catch(err => {
+                .catch(() => {
                         setrRedirectURLObject({
                             url: `/404?target=${encodeURIComponent(window.location.href)}`
                         })
@@ -121,8 +113,8 @@ const Redirecting = () => {
             } else clearTimeout(timerRef.current);
         }, 150);
     })
-    
-    if (redirectURLObject.url) 
+
+    if (redirectURLObject.url)
     return <Redirect
         to={redirectURLObject.url}
     />
@@ -132,7 +124,7 @@ const Redirecting = () => {
             <Col>
                 <StyledH4>Redirecting to
                     {
-                    message !== undefined && message !== 'target URL'? 
+                    message !== undefined && message !== 'target URL'?
                         <span className="accent-style" style={{display: 'inline-block', marginLeft: '0.3em'}}> {'"' + message + '"'}</span>
                         : <> {message}</>
                     }
@@ -144,5 +136,5 @@ const Redirecting = () => {
     </StyledContainer>);
 
 }
- 
+
 export default Redirecting;

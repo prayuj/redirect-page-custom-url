@@ -1,5 +1,6 @@
 .App {
   --dark-color: #0c0f0a;
+  --lighter-dark-color: #383a37;
   --light-color: #fff;
   --accent-color: #ff206e;
   overflow: clip;
