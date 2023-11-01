@@ -69,11 +69,15 @@ const Redirecting = () => {
                 } catch (error) {
                     console.error(error);
                 }
-                axios({
-                    url: `${process.env.REACT_APP_CUSTOM_URL_LAMBDA_ENDPOINT}/update-and-log-query-details/${target}`,
+                let params = '';
+                Object.entries(additional).forEach(([key, value]) => {
+                    params += `${key}=${value}&`
+                });
+                params = params.slice(0, -1);
+                fetch(`${process.env.REACT_APP_CUSTOM_URL_LAMBDA_ENDPOINT}/update-and-log-query-details/${target}?${params}`, {
                     method: 'POST',
-                    params: additional,
-                }).catch(() => {});
+                    keepalive: true,
+                });
                 axios({
                     url: `${process.env.REACT_APP_CUSTOM_URL_LAMBDA_ENDPOINT}/t/${target}`,
                     method: 'GET',
